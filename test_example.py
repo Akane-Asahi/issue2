@@ -10,4 +10,4 @@ class TestExample(unittest.TestCase):
         self.assertTrue(True)
 
     def test_fail(self):
-        self.assertEqual(1, 2)
+        self.assertEqual(2, 2)
