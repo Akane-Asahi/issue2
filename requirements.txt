@@ -1,3 +1,0 @@
-package1==version1
-package2==version2
-# Add more dependencies as needed
