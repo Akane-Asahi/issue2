@@ -26,24 +26,27 @@ jobs:
 
     steps:
       - name: Evaluate condition expression
+        id: evaluate-condition
         run: |
-          # Evaluate the condition expression at runtime
-          condition_result=$(run-shell echo "{{ steps.check-condition.outputs.result }}")
+          #!/bin/bash
 
-      - name: Set environment variable
-        run: |
-          echo "CONDITION_RESULT=${condition_result}" >> $GITHUB_ENV
+          # Get the result of the check-condition step
+          condition_result=${{ steps.check-condition.outputs.result }}
+
+          # Check if the condition is false
+          if [ "${condition_result}" == "true" ]; then
+            echo "The condition is false."
+          else
+            echo "The condition is true."
+          fi
 
   create-issue:
     runs-on: ubuntu-latest
     needs: evaluate-condition
 
-    env:
-      CONDITION_RESULT: ${{ needs.evaluate-condition.outputs.CONDITION_RESULT }}
-
     steps:
       - name: Create issue if condition is false
-        if: ${{ env.CONDITION_RESULT == 'true' }}
+        if: ${{ steps.evaluate-condition.outputs.condition_result == 'true' }}
         run: |
           # Create an issue using the GitHub API
           gh issue create --title "Issue created based on condition" --body "This issue was created because the condition (1=2) is false."
