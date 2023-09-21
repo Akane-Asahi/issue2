@@ -6,14 +6,44 @@ on:
       - main
 
 jobs:
-  create-issue:
+  check-condition:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Check condition
+        run: |
+          #!/bin/bash
+          # Check if the condition (1=2) is false
+          if [ "1" != "2" ]; then
+            echo "true"
+          else
+            echo "false"
+          fi
 
+  evaluate-condition:
+    runs-on: ubuntu-latest
+    needs: check-condition
+
+    steps:
+      - name: Evaluate condition expression
+        run: |
+          # Evaluate the condition expression at runtime
+          condition_result=$(run-shell echo "{{ steps.check-condition.outputs.result }}")
+
+      - name: Set environment variable
+        run: |
+          echo "CONDITION_RESULT=${condition_result}" >> $GITHUB_ENV
+
+  create-issue:
+    runs-on: ubuntu-latest
+    needs: evaluate-condition
+
+    env:
+      CONDITION_RESULT: ${{ needs.evaluate-condition.outputs.CONDITION_RESULT }}
+
+    steps:
       - name: Create issue if condition is false
-        if: ${{ !eq(1, 2) }}
+        if: ${{ env.CONDITION_RESULT == 'true' }}
         run: |
           # Create an issue using the GitHub API
           gh issue create --title "Issue created based on condition" --body "This issue was created because the condition (1=2) is false."
