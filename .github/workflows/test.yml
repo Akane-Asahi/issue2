@@ -20,8 +20,14 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Run tests
-        run: python -m unittest discover
+      - name: Run test_pass
+        run: python -m unittest test_example.TestExample.test_pass
+
+      - name: Run test_another_pass
+        run: python -m unittest test_example.TestExample.test_another_pass
+
+      - name: Run test_fail
+        run: python -m unittest test_example.TestExample.test_fail
 
       - name: Check for test failures and create GitHub issue
         if: failure()
