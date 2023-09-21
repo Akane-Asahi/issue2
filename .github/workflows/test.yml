@@ -41,3 +41,64 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{\"title\":\"Test Failures\",\"body\":\"$body\"}" \
             "https://api.github.com/repos/${{ github.repository }}/issues"
+  
+  test2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+
+      - name: Run test_pass
+        run: python -m unittest test_example.TestExample.test_pass
+
+      - name: Run test_another_pass
+        run: python -m unittest test_example.TestExample.test_another_pass
+
+      - name: Run test_fail
+        run: python -m unittest test_example.TestExample.test_fail
+
+      - name: Check for test failures and create GitHub issue
+        if: failure()
+        run: |
+          echo "Tests failed. Creating GitHub issue..."
+          body="Some tests have failed. Please investigate."
+
+          # Create a GitHub issue
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"title\":\"Test Failures\",\"body\":\"$body\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues"
+
+                    
+  test3:
+    runs-on: ubuntu-latest
+                    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+                    
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+                    
+      - name: Check for test failures and create GitHub issue
+        if: failure()
+        run: |
+          echo "Tests failed. Creating GitHub issue..."
+          body="Some tests have failed. Please investigate."
+                    
+          # Create a GitHub issue
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"title\":\"Test Failures\",\"body\":\"$body\"}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues"
+                    
